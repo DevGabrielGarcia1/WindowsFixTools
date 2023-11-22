@@ -1,10 +1,23 @@
 @echo off
 CLS
-TITLE "SFC & DISM Tool"
+TITLE Windows Fix Tools
+
+::::::::::::::::::::::::::::
+::Language variables
+::::::::::::::::::::::::::::
+
+
+
+
+
+::::::::::::::::::::::::::::
+::Request admin
+::::::::::::::::::::::::::::
 ECHO.
 ECHO =============================
 ECHO Running Admin shell
 ECHO =============================
+
 
 :init
 setlocal DisableDelayedExpansion
@@ -49,42 +62,91 @@ exit /B
 setlocal & cd /d %~dp0
 if '%1'=='ELEV' (del "%vbsGetPrivileges%" 1>nul 2>nul  &  shift /1)
 
+
+::::::::::::::::::::::::::::
+::Set Language
+::::::::::::::::::::::::::::
+CLS
+ECHO.
+ECHO =============================
+ECHO Language
+ECHO =============================
+ECHO.
+ECHO 1 - English
+ECHO 2 - Portugues
+ECHO 3 - EXIT
+ECHO.
+SET /P M=Type 1, 2 or 3 then press ENTER: 
+IF %M%==4 GOTO EOF
+IF %M%==3 GOTO FIM
+IF %M%==1 GOTO English
+IF %M%==2 GOTO Portugues
+
+:English
+SET menu1Op1=Automated correction
+SET menu1Op2=Advanced options
+
+SET menuOp1="SFC & DISM" check and automatic correction
+SET menuOp2="SFC & DISM" check and manual correction
+
+GOTO start
+
+:Portugues
+SET menu1Op1=Correcao automatizada
+SET menu1Op2=Opcoes avancadas
+
+SET menu2Op1=Verificacao "SFC & DISM" e correcao automatica
+SET menu2Op2=Verificacao "SFC & DISM" e correcao manual
+
+GOTO start
+
+
+
 ::::::::::::::::::::::::::::
 ::START
 ::::::::::::::::::::::::::::
+:start
+CLS
 ECHO.
 ECHO =============================
-ECHO " SFC & DISM Tool "
+ECHO Windows Fix Tools
 ECHO =============================
 
-:MENU
+
+:MENU1
 ECHO.
-ECHO "1 - Verificacao SFC & DISM e correcao automatica"
-ECHO "2 - Verificacao SFC & DISM e correcao manual"
-ECHO "3 - EXIT"
-ECHO.
-SET /P M=Type 1, 2 or 3 then press ENTER: 
-ECHO.
-ECHO 1 - CMD
-ECHO 2 - PowerShell
+ECHO 1 - %menu1Op1%
+ECHO 2 - %menu1Op2%
 ECHO 3 - EXIT
 ECHO.
-SET /P N=Type 1, 2 or 3 then press ENTER: 
-
-cls
-ECHO.
-ECHO =============================
-ECHO " SFC & DISM Tool "
-ECHO =============================
-ECHO.
-
-IF %M%==1 IF %N%==1 GOTO ALTOCMD
-IF %M%==1 IF %N%==2 GOTO ALTOPWS
-IF %M%==2 IF %N%==1 GOTO MANUALCMD
-IF %M%==2 IF %N%==2 GOTO MANUALPWS
-IF %M%==4 GOTO EOF
+SET /P M=Type 1, 2 or 3 then press ENTER: 
+IF %M%==1 GOTO auto
+IF %M%==2 GOTO MENU2
+IF %M%==3 GOTO FIM
 IF %N%==4 GOTO EOF
 
+
+
+:MENU2
+CLS
+ECHO.
+ECHO =============================
+ECHO Windows Fix Tools
+ECHO =============================
+ECHO.
+ECHO 1 - %menu2Op1%
+ECHO 2 - %menu2Op2%
+ECHO 3 - EXIT
+ECHO.
+SET /P M=Type 1, 2 or 3 then press ENTER: 
+IF %M%==1 GOTO AUTOCMD
+IF %M%==2 GOTO MANUALCMD
+IF %M%==3 GOTO FIM
+IF %N%==4 GOTO EOF
+
+
+
+:auto
 :ALTOCMD
 ECHO.
 ECHO =============================
@@ -106,6 +168,9 @@ GOTO FIM
 echo on
 sfc /scannow && Dism /Online /Cleanup-Image /ScanHealth && dism /online /cleanup-image /CheckHealth
 echo off
+SET /P M=Type 1 - Yes, 2 - No then press ENTER: 
+IF %M%==2 GOTO FIM
+dism /online /cleanup-image /restorehealth
 GOTO FIM
 
 :MANUALPWS
